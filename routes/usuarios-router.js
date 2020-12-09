@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const usuario = require('../models/usuario');
+const plan = require('../models/plan');
 
 //Crear un usuario
 router.post('/', function(req, res) {
@@ -22,40 +23,52 @@ router.post('/', function(req, res) {
                             apellido: req.body.txtApellido,
                             fechaNacimiento: req.body.txtNacimiento,
                             email: req.body.txtEmail,
-                            password: txtPwd1,
-                            tipoUsuario: {
-                                codigo: '3',
-                                descripcion: 'Cliente'
-                            },
+                            password: req.body.txtPwd1,
+                            tipoUsuario: req.body.txtTipoUsuario,
                             historialCompras: []
-                        })
+                        });
+                        u.save().then(result=>{
+                            res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
+                            res.end();
+                        }).catch(error=>{
+                            res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+                            res.end();
+                        });
                         break;
                     case 'Administrador de negocios':
-                        // TODO: Buscar datos del plan seleccionado
-                        let planSeleccionado;
                         plan.find({_id:req.body.txtPlanServicio}).then(result=>{
-                            planSeleccionado = result[0];
+                            u = new usuario({
+                                nombre: req.body.txtNombre,
+                                apellido: req.body.txtApellido,
+                                fechaNacimiento: req.body.txtNacimiento,
+                                email: req.body.txtEmail,
+                                password: req.body.txtPwd1,
+                                tipoUsuario: req.body.txtTipoUsuario,
+                                planServicio: {
+                                    id: result[0]._id,
+                                    nombre: result[0].nombre,
+                                    empresas: result[0].empresas,
+                                    categorias: result[0].categorias,
+                                    productos: result[0].productos,
+                                    archivos: result[0].archivos
+                                },
+                                nombreEmpresa: req.body.txtNombreEmpresa,
+                                descripcionEmpresa: req.body.txtDescripcionEmpresa,
+                                direccionEmpresa: req.body.txtDireccionEmpresa,
+                                categorias: [],
+                                archivos: [],
+                                empresas: []
+                            });
+                            u.save().then(result=>{
+                                res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
+                                res.end();
+                            }).catch(error=>{
+                                res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+                                res.end();
+                            });
                         }).catch(error=>{
                             console.log(error);
                         });
-                        u = new usuario({
-                            nombre: req.body.txtNombre,
-                            apellido: req.body.txtApellido,
-                            fechaNacimiento: req.body.txtNacimiento,
-                            email: req.body.txtEmail,
-                            password: txtPwd1,
-                            tipoUsuario: {
-                                codigo: '2',
-                                descripcion: 'Administrador de negocios'
-                            },
-                            planServicio: planSeleccionado,
-                            nombreEmpresa: req.body.txtNombreEmpresa,
-                            descripcionEmpresa: req.body.txtDescripcionEmpresa,
-                            direccionEmpresa: req.body.txtDireccionEmpresa,
-                            categorias: [],
-                            archivos: [],
-                            empresas: []
-                        })
                         break;
                     case 'Administrador de plataforma':            
                         u = new usuario({
@@ -63,21 +76,18 @@ router.post('/', function(req, res) {
                             apellido: req.body.txtApellido,
                             fechaNacimiento: req.body.txtNacimiento,
                             email: req.body.txtEmail,
-                            password: txtPwd1,
-                            tipoUsuario: {
-                                codigo: '1',
-                                descripcion: 'Administrador de plataforma'
-                            }
-                        })
+                            password: req.body.txtPwd1,
+                            tipoUsuario: req.body.txtTipoUsuario
+                        });
+                        u.save().then(result=>{
+                            res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
+                            res.end();
+                        }).catch(error=>{
+                            res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+                            res.end();
+                        });
                         break;
                 }
-                u.save().then(result=>{
-                    res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
-                    res.end();
-                }).catch(error=>{
-                    res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
-                    res.end();
-                });
             }
         } 
     });
@@ -86,8 +96,13 @@ router.post('/', function(req, res) {
 //Obtener un usuario
 router.get('/:id', function(req,res) {
     usuario.find({_id:req.params.id}).then(result=>{
-        res.send({codigo: 1, respuesta: result[0]});
-        res.end();
+        if (result.length == 0) {
+            res.send({codigo: 0, mensaje: 'El usuario solicitado no existe.'});
+            res.end();
+        } else {
+            res.send({codigo: 1, respuesta: result[0]});
+            res.end();
+        }
     }).catch(error=>{
         res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
         res.end();
@@ -97,7 +112,7 @@ router.get('/:id', function(req,res) {
 //Obtener todos los usuarios
 router.get('/',function(req,res) {
     usuario.find().then(result=>{
-        res.send({codigo: 1, respuesta: result[0]});
+        res.send({codigo: 1, respuesta: result});
         res.end();
     }).catch(error=>{
         res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
@@ -158,7 +173,7 @@ router.put('/:id/password', function(req, res) {
             } else {
                 usuario.updateOne(
                     {_id:req.params.id},
-                    {password: txtPasswordNueva},
+                    {password: req.body.txtPasswordNueva},
                     function (error, result) { 
                     if (error) {
                         res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.', respuesta: error});

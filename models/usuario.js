@@ -7,14 +7,11 @@ var cliente = new mongoose.Schema({
     fechaNacimiento: String,
     email: String,
     password: String,
-    tipoUsuario: {
-        codigo: String,
-        descripcion: String
-    },
+    tipoUsuario: String,
     // Cliente
-    historialCompras: { type : Array , "default" : [] },
+    historialCompras: mongoose.SchemaTypes.Mixed,
     // Administrador de negocios
-    planServicio: {
+    planServicio: /*mongoose.SchemaTypes.Mixed,*/{
         id: String,
         nombre: String,
         empresas: Number,
@@ -25,9 +22,9 @@ var cliente = new mongoose.Schema({
     nombreEmpresa: String,
     descripcionEmpresa: String,
     direccionEmpresa: String,
-    categorias: { type : Array , "default" : [] },
-    archivos: { type : Array , "default" : [] },
-    empresas: { type : Array , "default" : [] }
+    categorias: mongoose.SchemaTypes.Mixed,
+    archivos: mongoose.SchemaTypes.Mixed,
+    empresas: mongoose.SchemaTypes.Mixed
 });
 
 module.exports = mongoose.model('usuarios', cliente);
