@@ -1,5 +1,7 @@
 // Required node modules
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
@@ -7,6 +9,7 @@ var cors = require('cors');
 var database = require('./modules/database');
 
 // Routes
+var sessionRouter = require('./routes/session-router');
 var usuariosRouter = require('./routes/usuarios-router');
 var planesRouter = require('./routes/planes-router');
 var empresasRouter = require('./routes/empresas-router');
@@ -20,6 +23,13 @@ var app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(cookieParser());
+app.use(session({
+    secret: 'Pi3141592653',
+    resave: false,
+    saveUninitialized: true
+}));
+app.use('/session', sessionRouter);
 app.use('/usuarios', usuariosRouter);
 app.use('/planes', planesRouter);
 app.use('/empresas', empresasRouter);

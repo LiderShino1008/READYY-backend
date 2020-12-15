@@ -6,7 +6,7 @@ const usuario = require('../models/usuario');
 //Crear una empresa
 router.post('/', function(req, res) {
     empresa.exists(
-        { $or: [ {titulo:req.body.titulo}, {identificador:req.body.identificador} ] },
+        { $or: [ {titulo:req.body.er_txtTitulo}, {identificador:req.body.er_txtIdentificador} ] },
         function (err, doc) {
         if (err) { 
             console.log(err);
@@ -19,12 +19,12 @@ router.post('/', function(req, res) {
             } else {
                 let e = new empresa(
                     {
-                        titulo: req.body.titulo,
-                        imagen: req.body.imagen,
-                        identificador: req.body.identificador,
-                        descripcion: req.body.descripcion,
-                        palabrasClaves: req.body.palabrasClave,
-                        favicon: req.body.favicon,
+                        titulo: req.body.er_txtTitulo,
+                        imagen: req.body.er_txtImagen,
+                        identificador: req.body.er_txtIdentificador,
+                        descripcion: req.body.er_txtDescripcion,
+                        palabrasClaves: req.body.er_txtPalabrasClave,
+                        favicon: req.body.er_txtFavicon,
                         estado: true,
                         usuario: req.session.idUsuario,
                         bloques: []
@@ -94,7 +94,7 @@ router.get('/companies-list',function(req,res) {
 
 //Actualizar un plan
 // router.put('/:id',function(req, res) {
-//     plan.find({nombre:req.body.txtNombre}).select('_id').then(doc=>{
+//     plan.find({nombre:req.body.er_newNombre}).select('_id').then(doc=>{
 //         // Buscar plan con mismo nombre pero no el mismo que se va actualizar
 //         if ((doc.length != 0) && (doc[0]._id != req.params.id)) {
 //             res.send({codigo:0, mensaje: 'Ya existe un plan con ese nombre, elija uno nuevo.', respuesta: doc});
@@ -103,12 +103,12 @@ router.get('/companies-list',function(req,res) {
 //             plan.updateOne(
 //                 {_id:req.params.id},
 //                 {
-//                     nombre: req.body.txtNombre,
-//                     precio: req.body.txtPrecio,
-//                     empresas: req.body.txtEmpresas,
-//                     categorias: req.body.txtCategorias,
-//                     productos: req.body.txtProductos,
-//                     archivos: req.body.txtArchivos
+//                     nombre: req.body.er_newNombre,
+//                     precio: req.body.er_newPrecio,
+//                     empresas: req.body.er_newEmpresas,
+//                     categorias: req.body.er_newCategorias,
+//                     productos: req.body.er_newProductos,
+//                     archivos: req.body.er_newArchivos
 //                 },
 //                 function (error, result) { 
 //                 if (error) {

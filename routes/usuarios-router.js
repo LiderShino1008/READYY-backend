@@ -4,7 +4,7 @@ const usuario = require('../models/usuario');
 
 //Crear un usuario
 router.post('/', function(req, res) {
-    usuario.exists({email:req.body.txtEmail}, function (err, doc) {
+    usuario.exists({email:req.body.ur_txtEmail}, function (err, doc) {
         if (err) { 
             console.log(err);
             res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
@@ -15,15 +15,15 @@ router.post('/', function(req, res) {
                 res.end();
             } else {
                 let u;
-                switch (req.body.txtTipoUsuario) {
+                switch (req.body.ur_txtTipoUsuario) {
                     case 'Cliente':
                         u = new usuario({
-                            nombre: req.body.txtNombre,
-                            apellido: req.body.txtApellido,
-                            fechaNacimiento: req.body.txtNacimiento,
-                            email: req.body.txtEmail,
-                            password: req.body.txtPwd1,
-                            tipoUsuario: req.body.txtTipoUsuario,
+                            nombre: req.body.ur_txtNombre,
+                            apellido: req.body.ur_txtApellido,
+                            fechaNacimiento: req.body.ur_txtNacimiento,
+                            email: req.body.ur_txtEmail,
+                            password: req.body.ur_txtPwd1,
+                            tipoUsuario: req.body.ur_txtTipoUsuario,
                             historialCompras: []
                         });
                         u.save().then(result=>{
@@ -36,16 +36,16 @@ router.post('/', function(req, res) {
                         break;
                     case 'Administrador de negocios':
                         u = new usuario({
-                            nombre: req.body.txtNombre,
-                            apellido: req.body.txtApellido,
-                            fechaNacimiento: req.body.txtNacimiento,
-                            email: req.body.txtEmail,
-                            password: req.body.txtPwd1,
-                            tipoUsuario: req.body.txtTipoUsuario,
-                            planServicio: req.body.txtPlan,
-                            nombreEmpresa: req.body.txtNombreEmpresa,
-                            descripcionEmpresa: req.body.txtDescripcionEmpresa,
-                            direccionEmpresa: req.body.txtDireccionEmpresa,
+                            nombre: req.body.ur_txtNombre,
+                            apellido: req.body.ur_txtApellido,
+                            fechaNacimiento: req.body.ur_txtNacimiento,
+                            email: req.body.ur_txtEmail,
+                            password: req.body.ur_txtPwd1,
+                            tipoUsuario: req.body.ur_txtTipoUsuario,
+                            planServicio: req.body.ur_txtPlan,
+                            nombreEmpresa: req.body.ur_txtNombreEmpresa,
+                            descripcionEmpresa: req.body.ur_txtDescripcionEmpresa,
+                            direccionEmpresa: req.body.ur_txtDireccionEmpresa,
                             categorias: [],
                             archivos: [],
                             empresas: []
@@ -60,12 +60,12 @@ router.post('/', function(req, res) {
                         break;
                     case 'Administrador de plataforma':            
                         u = new usuario({
-                            nombre: req.body.txtNombre,
-                            apellido: req.body.txtApellido,
-                            fechaNacimiento: req.body.txtNacimiento,
-                            email: req.body.txtEmail,
-                            password: req.body.txtPwd1,
-                            tipoUsuario: req.body.txtTipoUsuario
+                            nombre: req.body.ur_txtNombre,
+                            apellido: req.body.ur_txtApellido,
+                            fechaNacimiento: req.body.ur_txtNacimiento,
+                            email: req.body.ur_txtEmail,
+                            password: req.body.ur_txtPwd1,
+                            tipoUsuario: req.body.ur_txtTipoUsuario
                         });
                         u.save().then(result=>{
                             res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
@@ -138,24 +138,24 @@ router.get('/',function(req,res) {
 //Actualizar un usuario
 router.put('/:id',function(req, res) {
     let updateQuery;
-    switch (req.body.txtTipoUsuario) {
+    switch (req.session.tipoUsuario) {
         case 'Administrador de negocios':
             updateQuery = {
-                nombre: req.body.txtNombre,
-                apellido: req.body.txtApellido,
-                fechaNacimiento: req.body.txtNacimiento,
-                planServicio: req.body.txtPlan,
-                nombreEmpresa: req.body.txtNombreEmpresa,
-                descripcionEmpresa: req.body.txtDescripcionEmpresa,
-                direccionEmpresa: req.body.txtDireccionEmpresa
+                nombre: req.body.ur_newNombre,
+                apellido: req.body.ur_newApellido,
+                fechaNacimiento: req.body.ur_newNacimiento,
+                planServicio: req.body.ur_newPlan,
+                nombreEmpresa: req.body.ur_newNombreEmpresa,
+                descripcionEmpresa: req.body.ur_newDescripcionEmpresa,
+                direccionEmpresa: req.body.ur_newDireccionEmpresa
             };
             break;
     
         default:
             updateQuery = {
-                nombre: req.body.txtNombre,
-                apellido: req.body.txtApellido,
-                fechaNacimiento: req.body.txtNacimiento
+                nombre: req.body.ur_newNombre,
+                apellido: req.body.ur_newApellido,
+                fechaNacimiento: req.body.ur_newNacimiento
             };
             break;
     }
@@ -176,7 +176,7 @@ router.put('/:id',function(req, res) {
 
 // Actualizar contraseña de un usuario
 router.put('/:id/password', function(req, res) {
-    usuario.exists({_id: req.params.id, password:req.body.txtPasswordAnterior}, function (err, doc) {
+    usuario.exists({_id: req.params.id, password:req.body.ur_txtPasswordAnterior}, function (err, doc) {
         if (err) { 
             console.log(err);
             res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
@@ -188,7 +188,7 @@ router.put('/:id/password', function(req, res) {
             } else {
                 usuario.updateOne(
                     {_id:req.params.id},
-                    {password: req.body.txtPasswordNueva},
+                    {password: req.body.ur_txtPasswordNueva},
                     function (error, result) { 
                     if (error) {
                         res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.', respuesta: error});

@@ -5,7 +5,7 @@ const plan = require('../models/plan');
 
 //Crear un plan
 router.post('/', function(req, res) {
-    plan.exists({nombre:req.body.txtNombre}, function (err, doc) {
+    plan.exists({nombre:req.body.pr_txtNombre}, function (err, doc) {
         if (err) { 
             console.log(err);
             res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
@@ -17,12 +17,12 @@ router.post('/', function(req, res) {
             } else {
                 let p = new plan(
                     {
-                        nombre: req.body.txtNombre,
-                        precio: req.body.txtPrecio,
-                        empresas: req.body.txtEmpresas,
-                        categorias: req.body.txtCategorias,
-                        productos: req.body.txtProductos,
-                        archivos: req.body.txtArchivos
+                        nombre: req.body.pr_txtNombre,
+                        precio: req.body.pr_txtPrecio,
+                        empresas: req.body.pr_txtEmpresas,
+                        categorias: req.body.pr_txtCategorias,
+                        productos: req.body.pr_txtProductos,
+                        archivos: req.body.pr_txtArchivos
                     }
                 );
                 p.save().then(result=>{
@@ -66,7 +66,7 @@ router.get('/',function(req,res) {
 
 //Actualizar un plan
 router.put('/:id',function(req, res) {
-    plan.find({nombre:req.body.txtNombre}).select('_id').then(doc=>{
+    plan.find({nombre:req.body.pr_newNombre}).select('_id').then(doc=>{
         // Buscar plan con mismo nombre pero no el mismo que se va actualizar
         if ((doc.length != 0) && (doc[0]._id != req.params.id)) {
             res.send({codigo:0, mensaje: 'Ya existe un plan con ese nombre, elija uno nuevo.', respuesta: doc});
@@ -75,12 +75,12 @@ router.put('/:id',function(req, res) {
             plan.updateOne(
                 {_id:req.params.id},
                 {
-                    nombre: req.body.txtNombre,
-                    precio: req.body.txtPrecio,
-                    empresas: req.body.txtEmpresas,
-                    categorias: req.body.txtCategorias,
-                    productos: req.body.txtProductos,
-                    archivos: req.body.txtArchivos
+                    nombre: req.body.pr_newNombre,
+                    precio: req.body.pr_newPrecio,
+                    empresas: req.body.pr_newEmpresas,
+                    categorias: req.body.pr_newCategorias,
+                    productos: req.body.pr_newProductos,
+                    archivos: req.body.pr_newArchivos
                 },
                 function (error, result) { 
                 if (error) {

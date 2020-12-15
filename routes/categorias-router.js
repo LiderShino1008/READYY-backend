@@ -6,7 +6,7 @@ const usuario = require('../models/usuario');
 //Crear una categoria
 router.post('/', function(req, res) {
     categoria.exists(
-        { nombre: req.body.nombre },
+        { nombre: req.body.cr_txtNombre },
         function (err, doc) {
         if (err) { 
             console.log(err);
@@ -19,7 +19,7 @@ router.post('/', function(req, res) {
             } else {
                 let c = new categoria(
                     {
-                        nombre: req.body.nombre,
+                        nombre: req.body.cr_txtNombre,
                         productos: [],
                         usuario: req.session.idUsuario
                     }
@@ -75,9 +75,34 @@ router.get('/',function(req,res) {
     });
 });
 
+//Agregar producto a una categoria
+router.put('/categoria/:id/producto',function(req, res) {
+    var myId = mongoose.Types.ObjectId();
+    var data = {
+        _id: myId,
+        nombre: req.body.cr_p_txtNombre,
+        imagen: req.body.cr_p_txtImagen,
+        precio: req.body.cr_p_txtPrecio
+    };
+    categoria.updateOne(
+        { _id: req.params.id },
+        { "$push": { productos: data }
+        },
+        function(err, result) {
+            if (err) {
+                res.send(err);
+                res.end();
+            } else {
+                res.send(data);
+                res.end();
+            }
+        }
+    );
+});
+
 //Actualizar un plan
 // router.put('/:id',function(req, res) {
-//     plan.find({nombre:req.body.txtNombre}).select('_id').then(doc=>{
+//     plan.find({nombre:req.body.cr_newNombre}).select('_id').then(doc=>{
 //         // Buscar plan con mismo nombre pero no el mismo que se va actualizar
 //         if ((doc.length != 0) && (doc[0]._id != req.params.id)) {
 //             res.send({codigo:0, mensaje: 'Ya existe un plan con ese nombre, elija uno nuevo.', respuesta: doc});
@@ -86,12 +111,12 @@ router.get('/',function(req,res) {
 //             plan.updateOne(
 //                 {_id:req.params.id},
 //                 {
-//                     nombre: req.body.txtNombre,
-//                     precio: req.body.txtPrecio,
-//                     empresas: req.body.txtEmpresas,
-//                     categorias: req.body.txtCategorias,
-//                     productos: req.body.txtProductos,
-//                     archivos: req.body.txtArchivos
+//                     nombre: req.body.cr_newNombre,
+//                     precio: req.body.cr_newPrecio,
+//                     empresas: req.body.cr_newEmpresas,
+//                     categorias: req.body.cr_newCategorias,
+//                     productos: req.body.cr_newProductos,
+//                     archivos: req.body.cr_newArchivos
 //                 },
 //                 function (error, result) { 
 //                 if (error) {
