@@ -9,10 +9,9 @@ var database = require('./modules/database');
 // Routes
 var usuariosRouter = require('./routes/usuarios-router');
 var planesRouter = require('./routes/planes-router');
-// var empresasRouter = require('./routes/empresas-router');
-// var categoriasRouter = require('./routes/categorias-router');
-// var productosRouter = require('./routes/productos-router');
-// var archivosRouter = require('./routes/archivos-router');
+var empresasRouter = require('./routes/empresas-router');
+var categoriasRouter = require('./routes/categorias-router');
+var archivosRouter = require('./routes/archivos-router');
 
 // Express
 var app = express();
@@ -23,10 +22,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/usuarios', usuariosRouter);
 app.use('/planes', planesRouter);
-//app.use('/empresas', empresasRouter);
-// app.use('/categorias', categoriasRouter);
-// app.use('/productos', productosRouter);
-// app.use('/archivos', archivosRouter);
+app.use('/empresas', empresasRouter);
+app.use('/categorias', categoriasRouter);
+app.use('/archivos', archivosRouter);
 
 // Backend
 app.get('/', function (req, res) {

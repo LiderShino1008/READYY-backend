@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const plan = require('../models/plan');
+// const usuario = require('../models/usuario');
 
 //Crear un plan
 router.post('/', function(req, res) {
@@ -100,17 +101,38 @@ router.put('/:id',function(req, res) {
 
 //Eliminar un plan
 router.delete('/:id', function(req,res) {
-    // TODO: Buscar si el plan esta en uso por algun usuario
+    // TODO: Verificar si funciona
+    // usuario.find({planServicio: { $ne: null }}).then(result=>{
+    //     if (result.length==0) {
+    //         plan.deleteOne(
+    //             { _id: req.params.id },
+    //             function (e, r) { 
+    //                 if (e){
+    //                     res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: e});
+    //                     res.end();
+    //                 } else{
+    //                     res.send({codigo: 1, mensaje: '¡Plan eliminado con éxito!', respuesta: r});
+    //                     res.end();
+    //                 }
+    //             });
+    //     } else {
+    //         res.send({codigo: 0, mensaje: 'No se puede eliminar. Este plan está en uso.', respuesta: r});
+    //         res.end();
+    //     }
+    // }).catch(error=>{
+    //     res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+    //     res.end();
+    // });
     plan.deleteOne(
         {
             _id: req.params.id
         },
-        function (error, result) { 
-            if (error){
-                res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+        function (e, r) { 
+            if (e){
+                res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: e});
                 res.end();
             } else{
-                res.send({codigo: 1, mensaje: '¡Plan eliminado con éxito!', respuesta: result});
+                res.send({codigo: 1, mensaje: '¡Plan eliminado con éxito!', respuesta: r});
                 res.end();
             }
         });

@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const usuario = require('../models/usuario');
-const plan = require('../models/plan');
 
 //Crear un usuario
 router.post('/', function(req, res) {
@@ -12,7 +11,7 @@ router.post('/', function(req, res) {
             res.end();
         } else {
             if (doc) {
-                res.send({codigo: 0, mensaje: 'El correo electrónico que ingresó está en uso, elija uno nuevo.'});
+                res.send({codigo: 0, mensaje: 'El correo electrónico está en uso, elija uno nuevo.'});
                 res.end();
             } else {
                 let u;
@@ -36,38 +35,27 @@ router.post('/', function(req, res) {
                         });
                         break;
                     case 'Administrador de negocios':
-                        plan.find({_id:req.body.txtPlanServicio}).then(result=>{
-                            u = new usuario({
-                                nombre: req.body.txtNombre,
-                                apellido: req.body.txtApellido,
-                                fechaNacimiento: req.body.txtNacimiento,
-                                email: req.body.txtEmail,
-                                password: req.body.txtPwd1,
-                                tipoUsuario: req.body.txtTipoUsuario,
-                                planServicio: {
-                                    id: result[0]._id,
-                                    nombre: result[0].nombre,
-                                    empresas: result[0].empresas,
-                                    categorias: result[0].categorias,
-                                    productos: result[0].productos,
-                                    archivos: result[0].archivos
-                                },
-                                nombreEmpresa: req.body.txtNombreEmpresa,
-                                descripcionEmpresa: req.body.txtDescripcionEmpresa,
-                                direccionEmpresa: req.body.txtDireccionEmpresa,
-                                categorias: [],
-                                archivos: [],
-                                empresas: []
-                            });
-                            u.save().then(result=>{
-                                res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
-                                res.end();
-                            }).catch(error=>{
-                                res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
-                                res.end();
-                            });
+                        u = new usuario({
+                            nombre: req.body.txtNombre,
+                            apellido: req.body.txtApellido,
+                            fechaNacimiento: req.body.txtNacimiento,
+                            email: req.body.txtEmail,
+                            password: req.body.txtPwd1,
+                            tipoUsuario: req.body.txtTipoUsuario,
+                            planServicio: req.body.txtPlan,
+                            nombreEmpresa: req.body.txtNombreEmpresa,
+                            descripcionEmpresa: req.body.txtDescripcionEmpresa,
+                            direccionEmpresa: req.body.txtDireccionEmpresa,
+                            categorias: [],
+                            archivos: [],
+                            empresas: []
+                        });
+                        u.save().then(result=>{
+                            res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
+                            res.end();
                         }).catch(error=>{
-                            console.log(error);
+                            res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+                            res.end();
                         });
                         break;
                     case 'Administrador de plataforma':            
@@ -95,7 +83,9 @@ router.post('/', function(req, res) {
 
 //Obtener un usuario
 router.get('/:id', function(req,res) {
-    usuario.find({_id:req.params.id}).then(result=>{
+    usuario.find({_id:req.params.id})
+    .select('-password')
+    .then(result=>{
         if (result.length == 0) {
             res.send({codigo: 0, mensaje: 'El usuario solicitado no existe.'});
             res.end();
@@ -109,9 +99,34 @@ router.get('/:id', function(req,res) {
     });
 });
 
+//Obtener usuario administrador de negocios
+router.get('/admin-business/:id', function(req,res) {
+    usuario.find({_id:req.params.id})
+    .populate('planServicio')
+    .populate('categorias')
+    .populate('archivos')
+    .populate('empresas', { usuario: 0, bloques: 0} )
+    .select('-password')
+    .then(result=>{
+        if (result.length == 0) {
+            res.send({codigo: 0, mensaje: 'El usuario solicitado no existe.'});
+            res.end();
+        } else {
+            res.send({codigo: 1, respuesta: result[0]});
+            res.end();
+        }
+    }).catch(error=>{
+        console.log(error);
+        res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+        res.end();
+    });
+});
+
 //Obtener todos los usuarios
 router.get('/',function(req,res) {
-    usuario.find().then(result=>{
+    usuario.find()
+    .select('-password')
+    .then(result=>{
         res.send({codigo: 1, respuesta: result});
         res.end();
     }).catch(error=>{
@@ -129,7 +144,7 @@ router.put('/:id',function(req, res) {
                 nombre: req.body.txtNombre,
                 apellido: req.body.txtApellido,
                 fechaNacimiento: req.body.txtNacimiento,
-                planServicio: req.body.txtPlanServicio,
+                planServicio: req.body.txtPlan,
                 nombreEmpresa: req.body.txtNombreEmpresa,
                 descripcionEmpresa: req.body.txtDescripcionEmpresa,
                 direccionEmpresa: req.body.txtDireccionEmpresa

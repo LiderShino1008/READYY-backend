@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var cliente = new mongoose.Schema({
+var usuario = new mongoose.Schema({
     // General
     nombre: String,
     apellido: String,
@@ -11,20 +11,13 @@ var cliente = new mongoose.Schema({
     // Cliente
     historialCompras: mongoose.SchemaTypes.Mixed,
     // Administrador de negocios
-    planServicio: /*mongoose.SchemaTypes.Mixed,*/{
-        id: String,
-        nombre: String,
-        empresas: Number,
-        archivos: Number,
-        categorias: Number,
-        productos: Number
-    },
+    planServicio: { type: mongoose.ObjectId, ref: 'planes', require: true },
     nombreEmpresa: String,
     descripcionEmpresa: String,
     direccionEmpresa: String,
-    categorias: mongoose.SchemaTypes.Mixed,
-    archivos: mongoose.SchemaTypes.Mixed,
-    empresas: mongoose.SchemaTypes.Mixed
+    categorias: [ { type: mongoose.ObjectId, ref: 'categorias', require: true } ],
+    archivos: [ { type: mongoose.ObjectId, ref: 'archivos', require: true } ],
+    empresas: [ { type: mongoose.ObjectId, ref: 'empresas', require: true } ]
 });
 
-module.exports = mongoose.model('usuarios', cliente);
+module.exports = mongoose.model('usuarios', usuario);
