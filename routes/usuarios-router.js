@@ -25,9 +25,9 @@ router.post('/', function(req, res) {
                             password: req.body.ur_txtPwd1,
                             tipoUsuario: req.body.ur_txtTipoUsuario,
                             historialCompras: [],
-                            categorias: undefined,
-                            archivos: undefined,
-                            empresas: undefined
+                            categorias: null,
+                            archivos: null,
+                            empresas: null
                         });
                         u.save().then(result=>{
                             res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
@@ -53,13 +53,6 @@ router.post('/', function(req, res) {
                             archivos: [],
                             empresas: []
                         });
-                        u.save().then(result=>{
-                            res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
-                            res.end();
-                        }).catch(error=>{
-                            res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
-                            res.end();
-                        });
                         break;
                     case 'Administrador de plataforma':            
                         u = new usuario({
@@ -69,9 +62,9 @@ router.post('/', function(req, res) {
                             email: req.body.ur_txtEmail,
                             password: req.body.ur_txtPwd1,
                             tipoUsuario: req.body.ur_txtTipoUsuario,
-                            categorias: undefined,
-                            archivos: undefined,
-                            empresas: undefined
+                            categorias: null,
+                            archivos: null,
+                            empresas: null
                         });
                         u.save().then(result=>{
                             res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});

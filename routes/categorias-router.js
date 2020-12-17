@@ -21,12 +21,12 @@ router.post('/', function(req, res) {
                     {
                         nombre: req.body.cr_txtNombre,
                         productos: [],
-                        usuario: req.session.idUsuario
+                        usuario: req.body.idUsuario
                     }
                 );
                 c.save().then(result=>{
                     usuario.updateOne(
-                        { _id: req.session.idUsuario },
+                        { _id: req.body.idUsuario },
                         { "$push": { categorias: result._id }
                         },
                         function(e, r) {

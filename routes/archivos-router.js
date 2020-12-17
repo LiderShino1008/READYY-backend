@@ -10,12 +10,12 @@ router.post('/', function(req, res) {
             nombre: req.body.ar_txtNombre,
             ruta: req.body.ar_txtRuta,
             tipo: req.body.ar_txtTipo,
-            usuario: req.session.idUsuario
+            usuario: req.body.idUsuario
         }
     );
     ar.save().then(result=>{
         usuario.updateOne(
-            { _id: req.session.idUsuario },
+            { _id: req.body.idUsuario },
             { "$push": { archivos: result._id }
             },
             function(e, r) {

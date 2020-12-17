@@ -26,13 +26,13 @@ router.post('/', function(req, res) {
                         palabrasClaves: req.body.er_txtPalabrasClave,
                         favicon: req.body.er_txtFavicon,
                         estado: true,
-                        usuario: req.session.idUsuario,
+                        usuario: req.body.idUsuario,
                         bloques: []
                     }
                 );
                 e.save().then(result=>{
                     usuario.updateOne(
-                        { _id: req.session.idUsuario },
+                        { _id: req.body.idUsuario },
                         { "$push": { empresas: result._id }
                         },
                         function(e, r) {
@@ -74,7 +74,7 @@ router.get('/empresa/:id', function(req,res) {
 router.get('/',function(req,res) {
     empresa.find()
     .populate('usuario', {nombreEmpresa: 1})
-    .select('-bloques -favicon -estado')
+    .select('-bloques -favicon')
     .then(result=>{
         res.send({codigo: 1, respuesta: result});
         res.end();
