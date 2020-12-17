@@ -55,7 +55,7 @@ router.post('/', function(req, res) {
 });
 
 //Obtener una empresa
-router.get('/:id', function(req,res) {
+router.get('/empresa/:id', function(req,res) {
     empresa.find({_id:req.params.id}).then(result=>{
         if (result.length == 0) {
             res.send({codigo: 0, mensaje: 'La empresa solicitada no existe.'});
@@ -72,7 +72,10 @@ router.get('/:id', function(req,res) {
 
 //Obtener todas las empresas
 router.get('/',function(req,res) {
-    empresa.find().then(result=>{
+    empresa.find()
+    .populate('usuario', {nombreEmpresa: 1})
+    .select('-bloques -favicon -estado')
+    .then(result=>{
         res.send({codigo: 1, respuesta: result});
         res.end();
     }).catch(error=>{
@@ -83,12 +86,34 @@ router.get('/',function(req,res) {
 
 //Obtener lista de empresas habilitadas
 router.get('/companies-list',function(req,res) {
-    empresa.find({estado: true}).then(result=>{
+    empresa.find({estado: "true"})
+    // .select('-bloques -favicon -estado')
+    .populate('usuario', {nombreEmpresa: 1})
+    .select('-bloques -favicon -estado')
+    .then(result=>{
         res.send({codigo: 1, respuesta: result});
         res.end();
     }).catch(error=>{
         res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
         res.end();
+    });
+});
+
+//Bloquear o desbloquear empresa
+router.put('/:id/estado',function(req, res) {
+    empresa.updateOne(
+        {_id:req.params.id},
+        { estado: req.body.er_newEstado },
+        function (error, result) { 
+        if (error) {
+            res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.', respuesta: error});
+            res.end();
+        } 
+        else {
+            ifelse
+            res.send({codigo: 1, mensaje: 'El estado de la empresa fue actualizado.', respuesta: result});
+            res.end();
+        } 
     });
 });
 

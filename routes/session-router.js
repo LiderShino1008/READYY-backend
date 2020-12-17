@@ -12,7 +12,7 @@ router.post('/login', function(req, res) {
             req.session.idUsuario = result[0]._id;
             req.session.tipoUsuario = result[0].tipoUsuario;
             console.log(req.session);
-            res.send({codigo: 1, respuesta: req.session.idUsuario});
+            res.send({codigo: 1, idUsuario: req.session.idUsuario, tipoUsuario: req.session.tipoUsuario});
             res.end();
         }
     }).catch(error=>{

@@ -7,10 +7,9 @@ const usuario = require('../models/usuario');
 router.post('/', function(req, res) {
     let ar = new archivo(
         {
-            nombre: req.body.ar_txtNombreArchivo,
-            ruta: req.body.ar_txtRutaArchivo,
-            tipo: req.body.ar_txtTipoArchivo,
-            extension: req.body.ar_txtExtensionArchivo,
+            nombre: req.body.ar_txtNombre,
+            ruta: req.body.ar_txtRuta,
+            tipo: req.body.ar_txtTipo,
             usuario: req.session.idUsuario
         }
     );

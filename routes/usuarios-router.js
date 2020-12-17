@@ -24,7 +24,10 @@ router.post('/', function(req, res) {
                             email: req.body.ur_txtEmail,
                             password: req.body.ur_txtPwd1,
                             tipoUsuario: req.body.ur_txtTipoUsuario,
-                            historialCompras: []
+                            historialCompras: [],
+                            categorias: undefined,
+                            archivos: undefined,
+                            empresas: undefined
                         });
                         u.save().then(result=>{
                             res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
@@ -43,9 +46,9 @@ router.post('/', function(req, res) {
                             password: req.body.ur_txtPwd1,
                             tipoUsuario: req.body.ur_txtTipoUsuario,
                             planServicio: req.body.ur_txtPlan,
-                            nombreEmpresa: req.body.ur_txtNombreEmpresa,
-                            descripcionEmpresa: req.body.ur_txtDescripcionEmpresa,
-                            direccionEmpresa: req.body.ur_txtDireccionEmpresa,
+                            nombreEmpresa: req.body.ur_txtEmpresa,
+                            descripcionEmpresa: req.body.ur_txtDescripcion,
+                            direccionEmpresa: req.body.ur_txtDireccion,
                             categorias: [],
                             archivos: [],
                             empresas: []
@@ -65,7 +68,10 @@ router.post('/', function(req, res) {
                             fechaNacimiento: req.body.ur_txtNacimiento,
                             email: req.body.ur_txtEmail,
                             password: req.body.ur_txtPwd1,
-                            tipoUsuario: req.body.ur_txtTipoUsuario
+                            tipoUsuario: req.body.ur_txtTipoUsuario,
+                            categorias: undefined,
+                            archivos: undefined,
+                            empresas: undefined
                         });
                         u.save().then(result=>{
                             res.send({codigo: 1, mensaje: '¡Usuario agregado con éxito!', respuesta: result});
@@ -84,7 +90,7 @@ router.post('/', function(req, res) {
 //Obtener un usuario
 router.get('/:id', function(req,res) {
     usuario.find({_id:req.params.id})
-    .select('-password')
+    .select('-password -categorias -archivos -empresas')
     .then(result=>{
         if (result.length == 0) {
             res.send({codigo: 0, mensaje: 'El usuario solicitado no existe.'});
@@ -125,7 +131,7 @@ router.get('/admin-business/:id', function(req,res) {
 //Obtener todos los usuarios
 router.get('/',function(req,res) {
     usuario.find()
-    .select('-password')
+    .select('-password -categorias -archivos -empresas')
     .then(result=>{
         res.send({codigo: 1, respuesta: result});
         res.end();
@@ -137,40 +143,46 @@ router.get('/',function(req,res) {
 
 //Actualizar un usuario
 router.put('/:id',function(req, res) {
-    let updateQuery;
-    switch (req.session.tipoUsuario) {
-        case 'Administrador de negocios':
-            updateQuery = {
-                nombre: req.body.ur_newNombre,
-                apellido: req.body.ur_newApellido,
-                fechaNacimiento: req.body.ur_newNacimiento,
-                planServicio: req.body.ur_newPlan,
-                nombreEmpresa: req.body.ur_newNombreEmpresa,
-                descripcionEmpresa: req.body.ur_newDescripcionEmpresa,
-                direccionEmpresa: req.body.ur_newDireccionEmpresa
-            };
-            break;
-    
-        default:
-            updateQuery = {
-                nombre: req.body.ur_newNombre,
-                apellido: req.body.ur_newApellido,
-                fechaNacimiento: req.body.ur_newNacimiento
-            };
-            break;
-    }
-    usuario.updateOne(
-        {_id:req.params.id},
-        updateQuery,
-        function (error, result) { 
-        if (error) {
-            res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.', respuesta: error});
-            res.end();
-        } 
-        else {
-            res.send({codigo: 1, mensaje: '¡Información actualizada con éxito!', respuesta: result});
-            res.end();
-        } 
+    usuario.findOne({_id:req.params.id}).select('tipoUsuario')
+    .then(result=>{
+        let updateQuery;
+        switch (result.tipoUsuario) {
+            case 'Administrador de negocios':
+                updateQuery = {
+                    nombre: req.body.ur_newNombre,
+                    apellido: req.body.ur_newApellido,
+                    fechaNacimiento: req.body.ur_newNacimiento,
+                    nombreEmpresa: req.body.ur_newNombreEmpresa,
+                    descripcionEmpresa: req.body.ur_newDescripcionEmpresa,
+                    direccionEmpresa: req.body.ur_newDireccionEmpresa
+                };
+                break;
+        
+            default:
+                updateQuery = {
+                    nombre: req.body.ur_newNombre,
+                    apellido: req.body.ur_newApellido,
+                    fechaNacimiento: req.body.ur_newNacimiento
+                };
+                break;
+        }
+        usuario.updateOne(
+            {_id:req.params.id},
+            updateQuery,
+            function (er, re) { 
+            if (er) {
+                res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.', respuesta: er});
+                res.end();
+            } 
+            else {
+                res.send({codigo: 1, mensaje: '¡Información actualizada con éxito!', respuesta: re});
+                res.end();
+            } 
+        });
+    }).catch(error=>{
+        console.log(error);
+        res.send({codigo: 99, mensaje: 'Lo sentimos, ha ocurrido un error.',respuesta: error});
+        res.end();
     });
 });
 
